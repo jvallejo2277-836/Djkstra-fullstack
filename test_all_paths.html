@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Encontrar Todos los Caminos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .api-test {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #ee5a52;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Nueva Funcionalidad: Encontrar Todos los Caminos</h1>
+        
+        <div class="api-test">
+            <h2>📡 Prueba de API Backend</h2>
+            <p>Verifica que la nueva API de "todos los caminos" esté funcionando:</p>
+            
+            <button onclick="testBackend()">🔍 Probar Backend API</button>
+            <button onclick="testDijkstra()">⚡ Probar Dijkstra API</button>
+            <button onclick="testGraphs()">📊 Probar Grafos API</button>
+            
+            <div id="status" class="status"></div>
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="api-test">
+            <h2>🎯 Nueva Funcionalidad Agregada</h2>
+            <ul>
+                <li><strong>Backend:</strong> Nueva API <code>/api/all-paths/</code></li>
+                <li><strong>Algoritmo:</strong> Búsqueda DFS para encontrar todos los caminos</li>
+                <li><strong>Frontend:</strong> Nuevo botón "Encontrar Todos los Caminos"</li>
+                <li><strong>Visualización:</strong> Panel interactivo para seleccionar caminos</li>
+                <li><strong>Comparación:</strong> Análisis contra el resultado de Dijkstra</li>
+            </ul>
+        </div>
+
+        <div class="api-test">
+            <h2>🎮 Cómo Usar la Nueva Funcionalidad</h2>
+            <ol>
+                <li>Asegúrate de que ambos servicios estén ejecutándose:
+                    <ul>
+                        <li>Backend: <a href="http://127.0.0.1:8000" target="_blank">http://127.0.0.1:8000</a></li>
+                        <li>Frontend: <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></li>
+                    </ul>
+                </li>
+                <li>Ve al visualizador de algoritmos</li>
+                <li>Selecciona nodos de inicio y destino</li>
+                <li>Haz clic en el nuevo botón <strong>"Encontrar Todos los Caminos"</strong></li>
+                <li>Explora los resultados en el panel que aparece</li>
+                <li>Haz clic en cualquier camino para resaltarlo en el grafo</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testBackend() {
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            
+            try {
+                status.className = 'status';
+                status.textContent = '🔄 Probando nueva API de todos los caminos...';
+                
+                const response = await fetch('http://127.0.0.1:8000/api/all-paths/');
+                
+                if (response.ok) {
+                    const data = await response.text();
+                    status.className = 'status success';
+                    status.textContent = '✅ API de todos los caminos está funcionando!';
+                    result.textContent = `Respuesta de /api/all-paths/:\n\n${data}`;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Error al conectar con la API';
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testDijkstra() {
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            
+            try {
+                status.className = 'status';
+                status.textContent = '🔄 Probando API de Dijkstra...';
+                
+                const response = await fetch('http://127.0.0.1:8000/api/dijkstra/');
+                
+                if (response.ok) {
+                    const data = await response.text();
+                    status.className = 'status success';
+                    status.textContent = '✅ API de Dijkstra funcionando!';
+                    result.textContent = `Respuesta de /api/dijkstra/:\n\n${data}`;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Error al conectar con Dijkstra API';
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testGraphs() {
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            
+            try {
+                status.className = 'status';
+                status.textContent = '🔄 Probando API de Grafos...';
+                
+                const response = await fetch('http://127.0.0.1:8000/api/graphs/');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    status.className = 'status success';
+                    status.textContent = '✅ API de Grafos funcionando!';
+                    result.textContent = `Grafos disponibles:\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Error al conectar con Grafos API';
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Prueba inicial al cargar la página
+        window.addEventListener('load', () => {
+            document.getElementById('status').textContent = '🚀 Página cargada. Haz clic en los botones para probar las APIs.';
+        });
+    </script>
+</body>
+</html>
